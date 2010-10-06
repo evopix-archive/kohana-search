@@ -43,7 +43,7 @@ class Kohana_Search {
 	 */
 	protected function __construct()
 	{
-		$this->_config = Kohana::config('lucene');
+		$this->_config = Kohana::config('search');
 		$this->index_path = $this->_config['index_path'];
 
 		if ( ! file_exists($this->get_index_path()))
@@ -226,7 +226,7 @@ class Kohana_Search {
 	}
 
 	/**
-	 * Return underlying Lucene index to allow use of Zend API.
+	 * Return underlying Search index to allow use of Zend API.
 	 * 
 	 * @return  Zend_Search_Lucene
 	 */
