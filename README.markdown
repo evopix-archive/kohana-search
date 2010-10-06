@@ -37,6 +37,101 @@ Kohana Search is a port of the kosearch Search module for Kohana 3.x. It is an i
 	
 	}
 
+## Example Controller
+
+	class Controller_Product extends Controller {
+	
+		public function action_create()
+		{
+			$this->template->title = 'New Product';
+			$this->template->content = View::factory('product/create')
+				->bind('product', $product)
+				->bind('errors', $errors);
+			
+			$product = ORM::factory('product');
+			
+			if ($_POST)
+			{
+				$product->values($_POST);
+				
+				if ($product->check())
+				{
+					$product->save();
+					Search::instance()->add($product);
+			
+					$this->request->redirect(Route::get('admin/product')->uri());
+				}
+				else
+				{
+					$errors = $product->validate()->errors('product/create');
+				}
+			}
+		}
+	
+		public function action_edit()
+		{
+			$this->template->title = 'Edit Product';
+			$this->template->content = View::factory('product/edit')
+				->bind('product', $product)
+				->bind('errors', $errors);
+			
+			$id = (int) $this->request->param('id');
+			$product = ORM::factory('product', $id);
+			
+			if ($_POST)
+			{
+				$product->values($_POST);
+				
+				if ($product->check())
+				{
+					$product->save();
+					Search::instance()->update($product);
+			
+					$this->request->redirect(Route::get('admin/product')->uri());
+				}
+				else
+				{
+					$errors = $product->validate()->errors('product/create');
+				}
+			}
+		}
+	
+		public function action_delete()
+		{
+			$this->template->title = 'Delete Product';
+			$this->template->content = View::factory('product/delete');
+			
+			$id = (int) $this->request->param('id');
+			$product = ORM::factory('product', $id);
+			
+			if ($_POST)
+			{
+				$product->delete();
+				Search::instance()->remove($product);
+			}
+		}
+	
+		public function action_search()
+		{
+			$query = Arr::get($_GET, 'query');
+			$this->template->title = 'Search results for: \''.urldecode($query).'\'';
+			$this->template->content = View::factory('search/results')
+				->set('query', $query)
+				->bind('results', $results);
+
+			$results = Search::instance()->find($query);
+		}
+	
+		public function action_build_index()
+		{
+			$products = ORM::factory('product')->find_all();
+			Search::instance()->build_search_index($products);
+			
+			$this->request->redirect('');
+		}
+	
+	}
+
 ## Creating/Re-Building an index
 
 	// Get a collection of indexable models
