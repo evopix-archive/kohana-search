@@ -10,6 +10,15 @@ Kohana Search is a port of the kosearch Search module for Kohana 3.x. It is an i
 4. Add the [StandardAnalyzer](http://codefury.net/projects/StandardAnalyzer/ "StandardAnalyzer") library to your vendor folder, if you want [word stemming](http://en.wikipedia.org/wiki/Stemming "wikipedia article").
 5. Create a "searchindex" folder in your application directory to hold the search indexes.
 
+Your folder structure should look like this:
+
+	application / searchindex
+	application / vendor / StandardAnalyzer
+	application / vendor / Zend / Exception.php
+	application / vendor / Zend / Loader
+	application / vendor / Zend / Loader.php
+	application / vendor / Zend / Search
+
 # Usage
 
 ## Example ORM model
