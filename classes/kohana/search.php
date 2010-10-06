@@ -270,7 +270,7 @@ class Kohana_Search {
 	 */
 	private function get_index_path()
 	{
-		return APPPATH.$this->index_path;
+		return realpath($this->index_path);
 	}
 
 	/**
