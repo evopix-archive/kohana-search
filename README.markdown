@@ -14,7 +14,7 @@ Kohana Search is a port of the kosearch Search module for Kohana 3.x. It is an i
 
 ## Example ORM model
 
-	class Model_Product extends ORM_Search_Searchable {
+	class Model_Product extends ORM_Searchable {
 	
 		/**
 		 * Define the fields to index
