@@ -87,10 +87,11 @@ class Kohana_Search {
 	 * @param   string                             the query
 	 * @return  Zend_Search_Lucene_Search_QueryHit
 	 */
-	public function find($query)
+	public function find()
 	{
 		$this->open_index();
-		return $this->index->find($query);
+		$args = func_get_args();
+		return call_user_func_array(array($this->index, 'find'), $args);;
 	}
 
 	/**
