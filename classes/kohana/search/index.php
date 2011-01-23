@@ -12,6 +12,8 @@
  */
 class Kohana_Search_Index {
 
+	protected $_index;
+
 	/**
 	 * @param  string   $name    name of the index
 	 * @param  boolean  $create  whether or not to create new index
@@ -30,7 +32,7 @@ class Kohana_Search_Index {
 		{
 			try
 			{
-				$index = $index = Zend_Search_Lucene::open($index_path);
+				$index = Zend_Search_Lucene::open($index_path);
 			}
 			catch(Zend_Search_Lucene_Exception $e)
 			{
@@ -38,7 +40,7 @@ class Kohana_Search_Index {
 			}
 		}
 
-		return $index;
+		$this->_index = $index;
 	}
 
 	/**
@@ -49,7 +51,8 @@ class Kohana_Search_Index {
 	 */
 	public static function create($name)
 	{
-		return new Search_Index($name, TRUE);
+		$index = new Search_Index($name, TRUE);
+		return $index->index;
 	}
 
 	/**
@@ -60,12 +63,20 @@ class Kohana_Search_Index {
 	 */
 	public static function open($name)
 	{
-		return new Search_Index($name);
+		$index = new Search_Index($name);
+		return $index->index;
 	}
 
 	protected function _get_index_path($name)
 	{
 		$index = Kohana::config('search.index_path');
-		return $index.DIRECTORY_SEPERATOR.$name;
+		return $index.DIRECTORY_SEPARATOR.$name;
 	}
+
+	public function __get($var)
+	{
+		if ($var == 'index')
+			return $this->_index;
+	}
+
 }
