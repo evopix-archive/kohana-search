@@ -18,40 +18,26 @@ class Kohana_Search {
 
 	protected $_index;
 	protected $_index_path;
+	protected $_index_name;
 
 	/**
 	 * Create a new instance of the Search class.
 	 *
 	 * @return  Search
 	 **/
-	public static function factory()
+	public static function factory($index_name)
 	{
-		return new Search;
+		return new Search($index_name);
 	}
 
 	/**
 	 * Protected constructor for singleton pattern
 	 */
-	protected function __construct()
+	protected function __construct($index_name)
 	{
 		$this->_config = Kohana::config('search');
-		$this->_index_path = $this->_config['index_path'];
-
-		if ( ! file_exists($this->_get_index_path()))
-		{
-			throw new Kohana_Exception('Could not find index path :path',
-				array('path' => $this->_get_index_path()));
-		}
-		elseif ( ! is_dir($this->_get_index_path()))
-		{
-			throw new Kohana_Exception('Index path :path is not a directory',
-				array('path' => $this->_get_index_path()));
-		}
-		elseif ( ! is_writable($this->_get_index_path()))
-		{
-			throw new Kohana_Exception('Index path :path is not writeable',
-				array('path' => $this->_get_index_path()));
-		}
+		$this->_index_path = $this->_base_index_path($this->_config['index_path']);
+		$this->_index_name = $index_name;
 
 		Search::load_search_libs();
 
@@ -204,7 +190,7 @@ class Kohana_Search {
 
 		foreach ($items as $item)
 		{
-			$this->add($item, self::CREATE_NEW);
+			$this->add($item, TRUE);
 		}
 
 		$this->_index->optimize();
@@ -260,9 +246,27 @@ class Kohana_Search {
 	 * 
 	 * @return  string
 	 */
-	protected function _get_index_path()
+	protected function _base_index_path($index_path)
 	{
-		return realpath($this->_index_path);
+		$base_index_path = realpath($index_path);
+
+		if ( ! file_exists($base_index_path))
+		{
+			throw new Kohana_Exception('Could not find index path :path',
+				array('path' => $base_index_path));
+		}
+		elseif ( ! is_dir($base_index_path))
+		{
+			throw new Kohana_Exception('Index path :path is not a directory',
+				array('path' => $base_index_path));
+		}
+		elseif ( ! is_writable($base_index_path))
+		{
+			throw new Kohana_Exception('Index path :path is not writeable',
+				array('path' => $base_index_path));
+		}
+
+		return $base_index_path;
 	}
 
 	/**
@@ -274,13 +278,13 @@ class Kohana_Search {
 	{
 		if (empty($this->_index))
 		{
-			try
+			if (is_array($this->_index_name))
 			{
-				$this->_index = $index = Zend_Search_Lucene::open($this->_get_index_path());
+				$this->_index = Search_Index_Multi::open($this->_index_name);
 			}
-			catch(Zend_Search_Lucene_Exception $e)
+			else
 			{
-				$this->_index = Zend_Search_Lucene::create($this->_get_index_path());
+				$this->_index = Search_Index::open($this->_index_name);
 			}
 		}
 
@@ -296,7 +300,14 @@ class Kohana_Search {
 	{
 		if (empty($this->_index))
 		{
-			$this->_index = Zend_Search_Lucene::create($this->_get_index_path());
+			if (is_array($this->_index_name))
+			{
+				throw new Kohana_Exception('Cannot create multiple indices at the same time.');
+			}
+			else
+			{
+				$this->_index = Search_Index::create($this->_index_name);
+			}
 		}
 	}
 
