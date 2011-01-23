@@ -26,14 +26,14 @@ interface Kohana_Searchable {
 	 * 
 	 * @return  array
 	 */
-	function get_indexable_fields();
+	public function get_indexable_fields();
 
 	/**
 	 * Gets the identifier for this item, for ORM Models this would be the PK.
 	 * 
 	 * @return  mixed
 	 */
-	function get_identifier();
+	public function get_identifier();
 
 	/**
 	 * Gets the type of this item. For ORM Models this would likely be the object 
@@ -41,13 +41,13 @@ interface Kohana_Searchable {
 	 * 
 	 * @return  string
 	 */
-	function get_type();
+	public function get_type();
 
 	/**
 	 * Gets the unique identifier of this item.
 	 * 
 	 * @return  mixed
 	 */
-	function get_unique_identifier();
+	public function get_unique_identifier();
 
 }

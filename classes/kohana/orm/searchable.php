@@ -12,7 +12,7 @@
  */
 abstract class Kohana_ORM_Searchable extends ORM {
 
-  	public function get_identifier()
+	public function get_identifier()
 	{
 		return $this->primary_val();
 	}

@@ -20,8 +20,8 @@ class Kohana_Search {
 	// Configuration array
 	protected $_config;
 
-	protected $index;
-	protected $index_path;
+	protected $_index;
+	protected $_index_path;
 
 	/**
 	 * Get the singleton instance of this class.
@@ -44,27 +44,27 @@ class Kohana_Search {
 	protected function __construct()
 	{
 		$this->_config = Kohana::config('search');
-		$this->index_path = $this->_config['index_path'];
+		$this->_index_path = $this->_config['index_path'];
 
-		if ( ! file_exists($this->get_index_path()))
+		if ( ! file_exists($this->_get_index_path()))
 		{
 			throw new Kohana_Exception('Could not find index path :path',
-				array('path' => $this->get_index_path()));
+				array('path' => $this->_get_index_path()));
 		}
-		elseif ( ! is_dir($this->get_index_path()))
+		elseif ( ! is_dir($this->_get_index_path()))
 		{
 			throw new Kohana_Exception('Index path :path is not a directory',
-				array('path' => $this->get_index_path()));
+				array('path' => $this->_get_index_path()));
 		}
-		elseif ( ! is_writable($this->get_index_path()))
+		elseif ( ! is_writable($this->_get_index_path()))
 		{
 			throw new Kohana_Exception('Index path :path is not writeable',
-				array('path' => $this->get_index_path()));
+				array('path' => $this->_get_index_path()));
 		}
 
 		if ($path = Kohana::find_file('vendor', 'Zend/Loader'))
 		{
-		    ini_set('include_path', ini_get('include_path').PATH_SEPARATOR.dirname(dirname($path)));
+			ini_set('include_path', ini_get('include_path').PATH_SEPARATOR.dirname(dirname($path)));
 		}
 
 		$this->load_search_libs();
@@ -89,9 +89,9 @@ class Kohana_Search {
 	 */
 	public function find()
 	{
-		$this->open_index();
+		$this->_open_index();
 		$args = func_get_args();
-		return call_user_func_array(array($this->index, 'find'), $args);;
+		return call_user_func_array(array($this->_index, 'find'), $args);;
 	}
 
 	/**
@@ -110,7 +110,7 @@ class Kohana_Search {
 
 		if ( ! $create_new)
 		{
-			$this->open_index();
+			$this->_open_index();
 		}
 
 		$doc = new Zend_Search_Lucene_Document();
@@ -160,7 +160,7 @@ class Kohana_Search {
 			}
 		}
 
-		$this->index->addDocument($doc);
+		$this->_index->addDocument($doc);
 
 		return $this;
 	}
@@ -199,7 +199,7 @@ class Kohana_Search {
 		}
 		elseif (sizeof($hits) == 1)
 		{
-			$this->open_index()->delete($hits[0]->id);
+			$this->_open_index()->delete($hits[0]->id);
 		}
 
 		return $this;
@@ -214,14 +214,14 @@ class Kohana_Search {
 	public function build_search_index($items)
 	{
         // rebuild new index - create, not open
-		$this->create_index();
+		$this->_create_index();
 
 		foreach ($items as $item)
 		{
 			$this->add($item, self::CREATE_NEW);
 		}
 
-		$this->index->optimize();
+		$this->_index->optimize();
 
 		return $this;
 	}
@@ -233,9 +233,9 @@ class Kohana_Search {
 	 */
 	public function get_index()
 	{
-		$this->create_index();
+		$this->_create_index();
 
-		return $this->index;
+		return $this->_index;
 	}
 
 	/**
@@ -256,12 +256,12 @@ class Kohana_Search {
 	 * @param   Zend_Search_Lucene_Document  Document to add
 	 * @return  Search	
 	 */
-	public function addDocument(Zend_Search_Lucene_Document $doc)
+	public function add_document(Zend_Search_Lucene_Document $doc)
 	{
 		
-		$this->open_index()->addDocument($doc);
+		$this->_open_index()->addDocument($doc);
 
-		return $this;		
+		return $this;
 	}
 	
 	/**
@@ -269,9 +269,9 @@ class Kohana_Search {
 	 * 
 	 * @return  string
 	 */
-	private function get_index_path()
+	protected function _get_index_path()
 	{
-		return realpath($this->index_path);
+		return realpath($this->_index_path);
 	}
 
 	/**
@@ -279,21 +279,21 @@ class Kohana_Search {
 	 * 
 	 * @return  Zend_Search_Lucene
 	 */
-	private function open_index()
+	protected function _open_index()
 	{
-		if (empty($this->index))
+		if (empty($this->_index))
 		{
 			try
 			{
-				$this->index = $index = Zend_Search_Lucene::open($this->get_index_path());
+				$this->_index = $index = Zend_Search_Lucene::open($this->_get_index_path());
 			}
 			catch(Zend_Search_Lucene_Exception $e)
 			{
-				$this->index = Zend_Search_Lucene::create($this->get_index_path());
+				$this->_index = Zend_Search_Lucene::create($this->_get_index_path());
 			}
 		}
 
-		return $this->index;
+		return $this->_index;
 	}
 
 	/**
@@ -301,11 +301,11 @@ class Kohana_Search {
 	 * 
 	 * @return  void
 	 */
-	private function create_index()
+	protected function _create_index()
 	{
-		if (empty($this->index))
+		if (empty($this->_index))
 		{
-			$this->index = Zend_Search_Lucene::create($this->get_index_path());
+			$this->_index = Zend_Search_Lucene::create($this->_get_index_path());
 		}
 	}
 
@@ -314,5 +314,5 @@ class Kohana_Search {
 	 * 
 	 * @return  void
 	 */
-	private function __clone() {}
+	protected function __clone() {}
 }

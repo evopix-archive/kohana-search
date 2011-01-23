@@ -12,9 +12,9 @@
  */
 class Kohana_Search_Field {
 
-	protected $name;
-	protected $type;
-	protected $html_decode;
+	protected $_name;
+	protected $_type;
+	protected $_html_decode;
 
 	/**
 	 * @param  String                    attribute name e.g. db table column name
@@ -23,9 +23,9 @@ class Kohana_Search_Field {
 	 */
 	public function __construct($name, $type, $html_decode = FALSE)
 	{
-		$this->name = $name;
-		$this->type = $type;
-		$this->html_decode = $html_decode;
+		$this->_name = $name;
+		$this->_type = $type;
+		$this->_html_decode = $html_decode;
 	}
 
 	/**
@@ -35,6 +35,6 @@ class Kohana_Search_Field {
 	 */
 	public function __get($var)
 	{
-		return $this->$var;
+		return $this->{'_'.$var};
 	}
 }
