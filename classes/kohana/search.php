@@ -12,10 +12,6 @@
  */
 class Kohana_Search {
 
-	const CREATE_NEW = TRUE;
-
-	// Singleton instance
-	protected static $_instance = NULL;
 	
 	// Configuration array
 	protected $_config;
@@ -24,18 +20,13 @@ class Kohana_Search {
 	protected $_index_path;
 
 	/**
-	 * Get the singleton instance of this class.
+	 * Create a new instance of the Search class.
 	 *
 	 * @return  Search
 	 **/
-	public static function instance()
+	public static function factory()
 	{
-		if (self::$_instance == NULL)
-		{
-			self::$_instance = new Search;
-		}
-
-		return self::$_instance;
+		return new Search;
 	}
 
 	/**
@@ -309,10 +300,4 @@ class Kohana_Search {
 		}
 	}
 
-	/**
-	 * Prevent cloning since this is a singleton
-	 * 
-	 * @return  void
-	 */
-	protected function __clone() {}
 }
