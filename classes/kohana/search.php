@@ -53,12 +53,7 @@ class Kohana_Search {
 				array('path' => $this->_get_index_path()));
 		}
 
-		if ($path = Kohana::find_file('vendor', 'Zend/Loader'))
-		{
-			ini_set('include_path', ini_get('include_path').PATH_SEPARATOR.dirname(dirname($path)));
-		}
-
-		$this->load_search_libs();
+		Search::load_search_libs();
 
 		if ($this->_config['use_english_stemming_analyser'])
 		{
@@ -233,8 +228,13 @@ class Kohana_Search {
 	 * Load Zend classes. Requires calling externally if get_index() is used,
 	 * or if Zend classes need instatiating
 	 */
-	public function load_search_libs()
+	public static function load_search_libs()
 	{
+		if ($path = Kohana::find_file('vendor', 'Zend/Loader'))
+		{
+			ini_set('include_path', ini_get('include_path').PATH_SEPARATOR.dirname(dirname($path)));
+		}
+
 		require_once Kohana::find_file('vendor', 'Zend/Loader/Autoloader');
 		require_once Kohana::find_file('vendor', 'StandardAnalyzer/Analyzer/Standard/English');
 
